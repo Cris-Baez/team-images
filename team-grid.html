@@ -8,36 +8,35 @@
     body {
       margin: 0;
       padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background-color: #f4f4f4;
     }
 
     .team-grid {
       display: grid;
-      grid-template-columns: repeat(11, 67px); /* 11 columnas */
-      grid-template-rows: repeat(38, 67px); /* 38 filas */
-      gap: 0;
+      grid-template-columns: repeat(3, 100px); /* 3 columnas */
+      grid-gap: 10px;
       position: relative;
     }
 
     .team-grid li {
-      width: 67px;
-      height: 67px;
+      width: 100px;
+      height: 100px;
       background-image: url('https://cloud-1de12d.b-cdn.net/media/original/871cbee6bfe7d38272e6c3021a1d5a9a.jpg');
-      background-size: 741px 2560px; /* Tamaño total de la imagen */
-      background-repeat: no-repeat;
+      background-size: 1100px 3800px; /* Tamaño total de la imagen */
       cursor: pointer;
-      transition: background-position 0.1s ease;
+      transition: background-position 0.2s ease;
       position: relative;
     }
 
     .tooltip-title {
       display: none;
       position: absolute;
-      bottom: -50px;
+      bottom: -30px;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(0, 0, 0, 0.8);
@@ -46,7 +45,6 @@
       border-radius: 5px;
       font-size: 12px;
       text-align: center;
-      z-index: 10;
     }
 
     li:hover .tooltip-title {
@@ -55,28 +53,28 @@
   </style>
 </head>
 <body>
-  <ul class="team-grid"></ul>
+  <ul class="team-grid">
+    <!-- Las celdas se generan dinámicamente -->
+  </ul>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const grid = document.querySelector(".team-grid");
-      const numCols = 11; // Número de columnas horizontales
-      const numRows = 38; // Número de filas (personas)
-      const cellSize = 67; // Tamaño de cada celda en píxeles
-      const states = 11; // Número de imágenes horizontales por persona
+      const numCols = 3; // Número de columnas en la cuadrícula
+      const numRows = 38; // Número total de personas
+      const states = 11; // Número de estados por persona (11 imágenes)
+      const cellSize = 100; // Tamaño de cada celda (en píxeles)
 
       // Generar las celdas dinámicamente
       for (let row = 0; row < numRows; row++) {
-        for (let col = 0; col < states; col++) {
-          const li = document.createElement("li");
-          li.dataset.row = row; // Fila de la persona
-          li.dataset.state = 0; // Estado inicial
-          li.style.backgroundPosition = `-${col * cellSize}px -${row * cellSize}px`;
-          grid.appendChild(li);
-        }
+        const li = document.createElement("li");
+        li.dataset.row = row; // Fila de la persona
+        li.dataset.state = 0; // Estado inicial (Sonriendo)
+        li.style.backgroundPosition = `0px -${row * cellSize}px`;
+        grid.appendChild(li);
       }
 
-      // Cambiar el estado según el movimiento del mouse
+      // Detectar movimiento del mouse para cambiar el estado dinámicamente
       document.addEventListener("mousemove", (e) => {
         const rect = grid.getBoundingClientRect();
         const mouseX = e.clientX - rect.left;
@@ -84,38 +82,37 @@
 
         grid.querySelectorAll("li").forEach((cell) => {
           const row = parseInt(cell.dataset.row, 10);
-          const col = parseInt(cell.dataset.state, 10);
+          const currentState = parseInt(cell.dataset.state, 10);
+          const cellX = cell.offsetLeft + cellSize / 2;
+          const cellY = cell.offsetTop + cellSize / 2;
 
-          const cellCenterX = (col + 0.5) * cellSize;
-          const cellCenterY = (row + 0.5) * cellSize;
-
-          const dx = mouseX - cellCenterX;
-          const dy = mouseY - cellCenterY;
+          const dx = mouseX - cellX;
+          const dy = mouseY - cellY;
 
           // Calcular dirección (arriba, abajo, izquierda, derecha)
           const angle = Math.atan2(dy, dx) * (180 / Math.PI);
-          let state = 0; // Por defecto, estado inicial
+          let newState = currentState;
 
-          if (angle >= -22.5 && angle < 22.5) state = 7; // Derecha
-          else if (angle >= 22.5 && angle < 67.5) state = 4; // Arriba-derecha
-          else if (angle >= 67.5 && angle < 112.5) state = 5; // Arriba
-          else if (angle >= 112.5 && angle < 157.5) state = 6; // Arriba-izquierda
-          else if (angle >= 157.5 || angle < -157.5) state = 10; // Izquierda
-          else if (angle >= -157.5 && angle < -112.5) state = 9; // Abajo-izquierda
-          else if (angle >= -112.5 && angle < -67.5) state = 8; // Abajo
-          else if (angle >= -67.5 && angle < -22.5) state = 3; // Abajo-derecha
+          if (angle >= -22.5 && angle < 22.5) newState = 7; // Derecha
+          else if (angle >= 22.5 && angle < 67.5) newState = 4; // Arriba-derecha
+          else if (angle >= 67.5 && angle < 112.5) newState = 5; // Arriba
+          else if (angle >= 112.5 && angle < 157.5) newState = 6; // Arriba-izquierda
+          else if (angle >= 157.5 || angle < -157.5) newState = 10; // Izquierda
+          else if (angle >= -157.5 && angle < -112.5) newState = 9; // Abajo-izquierda
+          else if (angle >= -112.5 && angle < -67.5) newState = 8; // Abajo
+          else if (angle >= -67.5 && angle < -22.5) newState = 3; // Abajo-derecha
 
-          // Actualizar la posición del fondo
-          cell.style.backgroundPosition = `-${state * cellSize}px -${row * cellSize}px`;
+          cell.style.backgroundPosition = `-${newState * cellSize}px -${row * cellSize}px`;
+          cell.dataset.state = newState;
         });
       });
 
-      // Cambiar a estado "Sonriendo" al hacer clic
+      // Cambiar al estado "Sonriendo" al hacer clic
       grid.addEventListener("click", (e) => {
         if (e.target.tagName === "LI") {
           const row = e.target.dataset.row;
           e.target.dataset.state = 0; // Cambiar al estado "Sonriendo"
-          e.target.style.backgroundPosition = `-0px -${row * cellSize}px`;
+          e.target.style.backgroundPosition = `0px -${row * cellSize}px`;
         }
       });
 
