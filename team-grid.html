@@ -11,9 +11,8 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
       background-color: #f4f4f4;
-      font-family: Arial, sans-serif;
     }
 
     .team-grid {
@@ -25,13 +24,13 @@
     }
 
     .team-grid li {
-      width: 67px; /* Ancho de cada celda */
-      height: 67px; /* Altura de cada celda */
+      width: 67px;
+      height: 67px;
       background-image: url('https://cloud-1de12d.b-cdn.net/media/original/871cbee6bfe7d38272e6c3021a1d5a9a.jpg');
       background-size: 741px 2560px; /* Tamaño total de la imagen */
       background-repeat: no-repeat;
       cursor: pointer;
-      transition: background-position 0.3s ease, transform 0.2s ease;
+      transition: background-position 0.1s ease;
       position: relative;
     }
 
@@ -56,87 +55,82 @@
   </style>
 </head>
 <body>
-  <ul class="team-grid">
-    <!-- Las celdas se generan dinámicamente -->
-  </ul>
+  <ul class="team-grid"></ul>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const grid = document.querySelector(".team-grid");
-      const numCols = 11; // Número de columnas
-      const numRows = 38; // Número de filas
-      const directions = {
-        up: 5,
-        down: 1,
-        left: 10,
-        right: 7,
-        "up-right": 4,
-        "up-left": 6,
-        "down-right": 8,
-        "down-left": 9,
-      };
+      const numCols = 11; // Número de columnas horizontales
+      const numRows = 38; // Número de filas (personas)
+      const cellSize = 67; // Tamaño de cada celda en píxeles
+      const states = 11; // Número de imágenes horizontales por persona
 
-      // Genera las celdas dinámicamente
+      // Generar las celdas dinámicamente
       for (let row = 0; row < numRows; row++) {
-        for (let col = 0; col < numCols; col++) {
+        for (let col = 0; col < states; col++) {
           const li = document.createElement("li");
-          li.style.backgroundPosition = `-${col * 67}px -${row * 67}px`;
-
-          const tooltip = document.createElement("div");
-          tooltip.className = "tooltip-title";
-          tooltip.innerHTML = `Person ${row + 1} <br><span>Position: ${col + 1}</span>`;
-          li.appendChild(tooltip);
-
+          li.dataset.row = row; // Fila de la persona
+          li.dataset.state = 0; // Estado inicial
+          li.style.backgroundPosition = `-${col * cellSize}px -${row * cellSize}px`;
           grid.appendChild(li);
         }
       }
 
-      // Reaccionar al movimiento del mouse
-      document.addEventListener("mousemove", (event) => {
+      // Cambiar el estado según el movimiento del mouse
+      document.addEventListener("mousemove", (e) => {
         const rect = grid.getBoundingClientRect();
-        const mouseX = event.clientX - rect.left;
-        const mouseY = event.clientY - rect.top;
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
 
-        grid.querySelectorAll("li").forEach((cell, index) => {
-          const cellRow = Math.floor(index / numCols);
-          const cellCol = index % numCols;
+        grid.querySelectorAll("li").forEach((cell) => {
+          const row = parseInt(cell.dataset.row, 10);
+          const col = parseInt(cell.dataset.state, 10);
 
-          // Calcula la posición relativa del mouse respecto a cada celda
-          const cellX = cellCol * 67 + 33.5;
-          const cellY = cellRow * 67 + 33.5;
-          const deltaX = mouseX - cellX;
-          const deltaY = mouseY - cellY;
+          const cellCenterX = (col + 0.5) * cellSize;
+          const cellCenterY = (row + 0.5) * cellSize;
 
-          let direction = "";
+          const dx = mouseX - cellCenterX;
+          const dy = mouseY - cellCenterY;
 
-          if (Math.abs(deltaX) > Math.abs(deltaY)) {
-            direction = deltaX > 0 ? "right" : "left";
-          } else {
-            direction = deltaY > 0 ? "down" : "up";
-          }
+          // Calcular dirección (arriba, abajo, izquierda, derecha)
+          const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+          let state = 0; // Por defecto, estado inicial
 
-          if (deltaX > 0 && deltaY > 0) direction = "down-right";
-          if (deltaX < 0 && deltaY > 0) direction = "down-left";
-          if (deltaX > 0 && deltaY < 0) direction = "up-right";
-          if (deltaX < 0 && deltaY < 0) direction = "up-left";
+          if (angle >= -22.5 && angle < 22.5) state = 7; // Derecha
+          else if (angle >= 22.5 && angle < 67.5) state = 4; // Arriba-derecha
+          else if (angle >= 67.5 && angle < 112.5) state = 5; // Arriba
+          else if (angle >= 112.5 && angle < 157.5) state = 6; // Arriba-izquierda
+          else if (angle >= 157.5 || angle < -157.5) state = 10; // Izquierda
+          else if (angle >= -157.5 && angle < -112.5) state = 9; // Abajo-izquierda
+          else if (angle >= -112.5 && angle < -67.5) state = 8; // Abajo
+          else if (angle >= -67.5 && angle < -22.5) state = 3; // Abajo-derecha
 
-          const directionIndex = directions[direction] || 0;
-
-          cell.style.backgroundPosition = `-${(directionIndex + cellCol) * 67}px -${
-            cellRow * 67
-          }px`;
+          // Actualizar la posición del fondo
+          cell.style.backgroundPosition = `-${state * cellSize}px -${row * cellSize}px`;
         });
       });
 
-      // Cambia el estado "Sonriendo" al hacer click
-      grid.addEventListener("click", (event) => {
-        if (event.target.tagName === "LI") {
-          event.target.style.backgroundPosition = `-0px -0px`; // Cambia al estado inicial
+      // Cambiar a estado "Sonriendo" al hacer clic
+      grid.addEventListener("click", (e) => {
+        if (e.target.tagName === "LI") {
+          const row = e.target.dataset.row;
+          e.target.dataset.state = 0; // Cambiar al estado "Sonriendo"
+          e.target.style.backgroundPosition = `-0px -${row * cellSize}px`;
+        }
+      });
+
+      // Mostrar "Sonriendo2" al pasar el mouse
+      grid.addEventListener("mouseover", (e) => {
+        if (e.target.tagName === "LI") {
+          const row = e.target.dataset.row;
+          e.target.dataset.state = 1; // Cambiar al estado "Sonriendo2"
+          e.target.style.backgroundPosition = `-${1 * cellSize}px -${row * cellSize}px`;
         }
       });
     });
   </script>
 </body>
 </html>
+
 
 
