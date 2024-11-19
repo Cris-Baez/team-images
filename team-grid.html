@@ -28,15 +28,16 @@
       height: 100px;
       background-image: url('https://cloud-1de12d.b-cdn.net/media/original/871cbee6bfe7d38272e6c3021a1d5a9a.jpg');
       background-size: 1100px 3800px; /* Tamaño total de la imagen */
+      background-repeat: no-repeat;
       cursor: pointer;
-      transition: background-position 0.2s ease;
+      transition: background-position 0.1s ease; /* Transición más rápida */
       position: relative;
     }
 
     .tooltip-title {
       display: none;
       position: absolute;
-      bottom: -30px;
+      bottom: -50px;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(0, 0, 0, 0.8);
@@ -45,17 +46,21 @@
       border-radius: 5px;
       font-size: 12px;
       text-align: center;
+      z-index: 10;
     }
 
     li:hover .tooltip-title {
       display: block;
     }
+
+    /* Agregamos efecto "hover" más fluido */
+    li:hover {
+      transition: background-position 0.1s ease-in-out; /* Efecto más fluido */
+    }
   </style>
 </head>
 <body>
-  <ul class="team-grid">
-    <!-- Las celdas se generan dinámicamente -->
-  </ul>
+  <ul class="team-grid"></ul>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -127,6 +132,8 @@
     });
   </script>
 </body>
+</html>
+
 </html>
 
 
