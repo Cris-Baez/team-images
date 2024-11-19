@@ -30,10 +30,10 @@
       background-size: 1100px 3800px; /* Tamaño total de la imagen */
       background-repeat: no-repeat;
       cursor: pointer;
-      transition: background-position 0s; /* No transición lenta, cambio inmediato */
+      transition: background-position 0s ease; /* Sin transición deslizante */
       position: relative;
-      border: none; /* Aseguramos que no haya borde */
-      box-shadow: none; /* Quitamos sombra */
+      border: none; /* Eliminamos bordes innecesarios */
+      box-shadow: none; /* Eliminamos sombras */
     }
 
     .tooltip-title {
@@ -55,20 +55,21 @@
       display: block;
     }
 
-    /* Efecto de hover más fluido */
+    /* Efecto hover más fluido */
     li:hover {
-      background-position: -67px 0; /* Cambio inmediato al estado "Sonriendo2" */
+      background-position: -67px 0; /* Cambiar a Sonriendo2 */
     }
   </style>
 </head>
 <body>
-  <br><br><br><br>
-  <ul class="team-grid"></ul>
+  <ul class="team-grid">
+    <!-- Las celdas se generan dinámicamente -->
+  </ul>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       const grid = document.querySelector(".team-grid");
-      const numCols = 3; // Número de columnas
+      const numCols = 3; // Número de columnas en la cuadrícula
       const numRows = 38; // Número total de personas
       const states = 11; // Número de estados por persona (11 imágenes)
       const cellSize = 100; // Tamaño de cada celda (en píxeles)
@@ -110,7 +111,6 @@
           else if (angle >= -112.5 && angle < -67.5) newState = 8; // Abajo
           else if (angle >= -67.5 && angle < -22.5) newState = 3; // Abajo-derecha
 
-          // Cambiar el fondo según la posición
           cell.style.backgroundPosition = `-${newState * cellSize}px -${row * cellSize}px`;
           cell.dataset.state = newState;
         });
@@ -137,6 +137,7 @@
   </script>
 </body>
 </html>
+
 
 
 
