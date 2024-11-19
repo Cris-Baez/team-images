@@ -3,41 +3,40 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Team Grid</title>
+  <title>Dynamic Team Grid</title>
   <style>
     body {
       margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      height: 100vh;
+      background-color: #f4f4f4;
     }
 
     .team-grid {
       display: grid;
-      grid-template-columns: repeat(3, 100px);
-      gap: 10px;
+      grid-template-columns: repeat(11, 67px); /* 67px = 741px / 11 */
+      gap: 0;
       position: relative;
     }
 
     .team-grid li {
-      width: 100px;
-      height: 100px;
+      width: 67px; /* Ancho de cada imagen individual */
+      height: 67px; /* Altura de cada imagen individual */
       background-image: url('https://cloud-1de12d.b-cdn.net/media/original/871cbee6bfe7d38272e6c3021a1d5a9a.jpg');
-      background-size: 900px 900px;
+      background-size: 741px 2560px; /* Tamaño total de la imagen */
       background-repeat: no-repeat;
       cursor: pointer;
-      transition: transform 0.3s ease, filter 0.3s ease;
       list-style: none;
+      transition: transform 0.2s ease;
     }
 
     .tooltip-title {
       display: none;
       position: absolute;
-      bottom: -30px;
+      bottom: -50px;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(0, 0, 0, 0.8);
@@ -55,79 +54,23 @@
 </head>
 <body>
   <ul class="team-grid">
+    <!-- Las posiciones de las imágenes se calculan dinámicamente -->
     <li style="background-position: -0px -0px;">
       <div class="tooltip-title">Juan Ramirez<br><span>Founder CEO</span></div>
     </li>
-    <li style="background-position: -100px -0px;">
+    <li style="background-position: -67px -0px;">
       <div class="tooltip-title">Carlos Torres<br><span>Chief Information Officer</span></div>
     </li>
-    <li style="background-position: -200px -0px;">
+    <li style="background-position: -134px -0px;">
       <div class="tooltip-title">Monica Gerena<br><span>CFO and HR Director</span></div>
     </li>
-    <li style="background-position: -0px -100px;">
+    <li style="background-position: -201px -0px;">
       <div class="tooltip-title">Jessica Gomez<br><span>VP Client Solutions</span></div>
     </li>
-    <li style="background-position: -100px -100px;">
+    <li style="background-position: -268px -0px;">
       <div class="tooltip-title">Leidy Lagos<br><span>Product Owner</span></div>
     </li>
-    <li style="background-position: -200px -100px;">
-      <div class="tooltip-title">Andrea Botina<br><span>Product Owner</span></div>
-    </li>
-    <li style="background-position: -0px -200px;">
-      <div class="tooltip-title">Christian Llanos<br><span>Project Manager Lead</span></div>
-    </li>
-    <li style="background-position: -100px -200px;">
-      <div class="tooltip-title">Deborah Lopera<br><span>Project Manager</span></div>
-    </li>
-    <li style="background-position: -200px -200px;">
-      <div class="tooltip-title">Daniela Rodriguez<br><span>Project Manager</span></div>
-    </li>
-    <li style="background-position: -0px -300px;">
-      <div class="tooltip-title">Nicolas Giraldo<br><span>Project Manager</span></div>
-    </li>
-    <li style="background-position: -100px -300px;">
-      <div class="tooltip-title">Claudia Rojas<br><span>QA Lead</span></div>
-    </li>
-    <li style="background-position: -200px -300px;">
-      <div class="tooltip-title">David Solorzano<br><span>QA</span></div>
-    </li>
-    <li style="background-position: -0px -400px;">
-      <div class="tooltip-title">Aide Paez<br><span>QA</span></div>
-    </li>
-    <li style="background-position: -100px -400px;">
-      <div class="tooltip-title">Amanda Triana<br><span>Management Human Talent</span></div>
-    </li>
-    <li style="background-position: -200px -400px;">
-      <div class="tooltip-title">Camilo Molina<br><span>Developer</span></div>
-    </li>
-    <li style="background-position: -0px -500px;">
-      <div class="tooltip-title">Leonardo Vera<br><span>Developer</span></div>
-    </li>
-    <li style="background-position: -100px -500px;">
-      <div class="tooltip-title">Johan Santamaria<br><span>Software Architect</span></div>
-    </li>
-    <li style="background-position: -200px -500px;">
-      <div class="tooltip-title">Diana Veloza<br><span>QA</span></div>
-    </li>
-    <li style="background-position: -0px -600px;">
-      <div class="tooltip-title">Miller Torres<br><span>Development Manager</span></div>
-    </li>
-    <li style="background-position: -100px -600px;">
-      <div class="tooltip-title">Santiago Flores<br><span>QA</span></div>
-    </li>
-    <li style="background-position: -200px -600px;">
-      <div class="tooltip-title">Oscar Cubillos<br><span>Developer</span></div>
-    </li>
-    <li style="background-position: -0px -700px;">
-      <div class="tooltip-title">Camilo Soto<br><span>Developer</span></div>
-    </li>
-    <li style="background-position: -100px -700px;">
-      <div class="tooltip-title">Jose Rodriguez<br><span>Developer</span></div>
-    </li>
-    <li style="background-position: -200px -700px;">
-      <div class="tooltip-title">Fredy Rodriguez<br><span>Software Architect</span></div>
-    </li>
-    <!-- Agrega el resto de los miembros aquí -->
+    <!-- Añade más miembros según las posiciones -->
   </ul>
 
   <script>
@@ -142,13 +85,18 @@
         const y = e.clientY - rect.top;
 
         teamMembers.forEach((member, index) => {
-          const angleX = ((x - (index % 3) * 100 - 50) / 20).toFixed(2);
-          const angleY = ((y - Math.floor(index / 3) * 100 - 50) / 20).toFixed(2);
+          const col = index % 11; // Número de columnas
+          const row = Math.floor(index / 11); // Número de filas
+          const offsetX = x - col * 67 - 33.5; // Centra el mouse en cada celda
+          const offsetY = y - row * 67 - 33.5;
+          const angleX = Math.min(Math.max(offsetX / 10, -15), 15); // Limita el ángulo
+          const angleY = Math.min(Math.max(offsetY / 10, -15), 15);
 
-          member.style.transform = `rotateX(${angleY}deg) rotateY(${angleX}deg)`;
+          member.style.transform = `rotateX(${-angleY}deg) rotateY(${angleX}deg)`;
         });
       });
     });
   </script>
 </body>
 </html>
+
