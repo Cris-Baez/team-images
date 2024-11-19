@@ -8,29 +8,32 @@
     body {
       margin: 0;
       padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      background-color: #f4f4f4;
+      min-height: 100vh;
     }
 
     .team-grid {
-      display: grid;
-      grid-template-columns: repeat(11, 67px); /* 67px = 741px / 11 */
-      gap: 0;
       position: relative;
+      width: 741px; /* Ancho total de la imagen */
+      height: 2560px; /* Altura total de la imagen */
+      display: grid;
+      grid-template-columns: repeat(11, 67px); /* 11 columnas de 67px */
+      grid-template-rows: repeat(38, 67px); /* 38 filas de 67px */
+      gap: 0;
     }
 
     .team-grid li {
-      width: 67px; /* Ancho de cada imagen individual */
-      height: 67px; /* Altura de cada imagen individual */
+      width: 67px; /* Tamaño de cada celda */
+      height: 67px; /* Tamaño de cada celda */
       background-image: url('https://cloud-1de12d.b-cdn.net/media/original/871cbee6bfe7d38272e6c3021a1d5a9a.jpg');
       background-size: 741px 2560px; /* Tamaño total de la imagen */
-      background-repeat: no-repeat;
       cursor: pointer;
-      list-style: none;
       transition: transform 0.2s ease;
+      list-style: none;
     }
 
     .tooltip-title {
@@ -45,6 +48,7 @@
       border-radius: 5px;
       font-size: 12px;
       text-align: center;
+      z-index: 10;
     }
 
     li:hover .tooltip-title {
@@ -54,49 +58,101 @@
 </head>
 <body>
   <ul class="team-grid">
-    <!-- Las posiciones de las imágenes se calculan dinámicamente -->
-    <li style="background-position: -0px -0px;">
-      <div class="tooltip-title">Juan Ramirez<br><span>Founder CEO</span></div>
-    </li>
-    <li style="background-position: -67px -0px;">
-      <div class="tooltip-title">Carlos Torres<br><span>Chief Information Officer</span></div>
-    </li>
-    <li style="background-position: -134px -0px;">
-      <div class="tooltip-title">Monica Gerena<br><span>CFO and HR Director</span></div>
-    </li>
-    <li style="background-position: -201px -0px;">
-      <div class="tooltip-title">Jessica Gomez<br><span>VP Client Solutions</span></div>
-    </li>
-    <li style="background-position: -268px -0px;">
-      <div class="tooltip-title">Leidy Lagos<br><span>Product Owner</span></div>
-    </li>
-    <!-- Añade más miembros según las posiciones -->
+    <!-- Generamos 11 columnas x 38 filas -->
+    <!-- Cada celda se ajusta dinámicamente según el índice -->
+    <script>
+      const workers = [
+        "Juan Ramirez|Founder CEO",
+        "Carlos Torres|Chief Information Officer",
+        "Monica Gerena|CFO and HR Director",
+        "Jessica Gomez|VP Client Solutions",
+        "Leidy Lagos|Product Owner",
+        "Andrea Botina|Product Owner",
+        "Christian Llanos|Project Manager Lead",
+        "Deborah Lopera|Project Manager",
+        "Daniela Rodriguez|Project Manager",
+        "Nicolas Giraldo|Project Manager",
+        "Claudia Rojas|QA Lead",
+        "David Solorzano|QA",
+        "Aide Paez|QA",
+        "Amanda Triana|Management Human Talent",
+        "Camilo Molina|Developer",
+        "Leonardo Vera|Developer",
+        "Johan Santamaria|Software Architect",
+        "Diana Veloza|QA",
+        "Miller Torres|Development Manager",
+        "Santiago Flores|QA",
+        "Oscar Cubillos|Developer",
+        "Camilo Soto|Developer",
+        "Jose Rodriguez|Developer",
+        "Fredy Rodriguez|Software Architect",
+        "Phil Hennessy|VP – Sales and Marketing",
+        "Cristhian Pérez|Developer",
+        "Alexander Marceles|QA",
+        "Karen Torres|QA",
+        "Duvan Pérez|QA",
+        "Diego Guzman|Developer",
+        "Anyi Garzón|Developer",
+        "Helmer Fuentes|Developer",
+        "Duvan Guia|Developer",
+        "Santiago Gacharná|Developer",
+        "Guillermo Ospitia|Developer",
+        "Viviana Baez|Developer",
+        "David Trujillo|Admin Assistant"
+      ];
+
+      const grid = document.querySelector('.team-grid');
+      let col = 11; // Número de columnas
+      workers.forEach((worker, index) => {
+        const row = Math.floor(index / col); // Calcula la fila
+        const column = index % col; // Calcula la columna
+        const [name, position] = worker.split('|'); // Divide nombre y cargo
+
+        const li = document.createElement('li');
+        li.style.backgroundPosition = `-${column * 67}px -${row * 67}px`;
+
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tooltip-title';
+        tooltip.innerHTML = `${name}<br><span>${position}</span>`;
+
+        li.appendChild(tooltip);
+        grid.appendChild(li);
+      });
+    </script>
   </ul>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const teamGrid = document.querySelector('.team-grid');
-      const teamMembers = teamGrid.querySelectorAll('li');
+      const grid = document.querySelector('.team-grid');
+      const cells = document.querySelectorAll('.team-grid li');
 
       // Seguimiento del mouse
       document.addEventListener('mousemove', (e) => {
-        const rect = teamGrid.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+        const rect = grid.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
 
-        teamMembers.forEach((member, index) => {
-          const col = index % 11; // Número de columnas
-          const row = Math.floor(index / 11); // Número de filas
-          const offsetX = x - col * 67 - 33.5; // Centra el mouse en cada celda
-          const offsetY = y - row * 67 - 33.5;
-          const angleX = Math.min(Math.max(offsetX / 10, -15), 15); // Limita el ángulo
+        cells.forEach((cell, index) => {
+          const row = Math.floor(index / 11); // Calcula la fila actual
+          const column = index % 11; // Calcula la columna actual
+          const offsetX = mouseX - column * 67 - 33.5; // Centro del celda
+          const offsetY = mouseY - row * 67 - 33.5;
+          const angleX = Math.min(Math.max(offsetX / 10, -15), 15); // Ángulo limitado
           const angleY = Math.min(Math.max(offsetY / 10, -15), 15);
 
-          member.style.transform = `rotateX(${-angleY}deg) rotateY(${angleX}deg)`;
+          cell.style.transform = `rotateX(${angleY}deg) rotateY(${angleX}deg)`;
+        });
+      });
+
+      // Reset de transformación cuando el mouse sale
+      grid.addEventListener('mouseleave', () => {
+        cells.forEach((cell) => {
+          cell.style.transform = 'rotateX(0deg) rotateY(0deg)';
         });
       });
     });
   </script>
 </body>
 </html>
+
 
