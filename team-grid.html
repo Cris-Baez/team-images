@@ -3,37 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dynamic Team Grid</title>
+  <title>Interactive Team Grid</title>
   <style>
     body {
       margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      height: 100vh;
+      background-color: #f4f4f4;
+      font-family: Arial, sans-serif;
     }
 
     .team-grid {
-      position: relative;
-      width: 741px; /* Ancho total de la imagen */
-      height: 2560px; /* Altura total de la imagen */
       display: grid;
-      grid-template-columns: repeat(11, 67px); /* 11 columnas de 67px */
-      grid-template-rows: repeat(38, 67px); /* 38 filas de 67px */
+      grid-template-columns: repeat(11, 67px); /* 11 columnas */
+      grid-template-rows: repeat(38, 67px); /* 38 filas */
       gap: 0;
+      position: relative;
     }
 
     .team-grid li {
-      width: 67px; /* Tamaño de cada celda */
-      height: 67px; /* Tamaño de cada celda */
+      width: 67px; /* Ancho de cada celda */
+      height: 67px; /* Altura de cada celda */
       background-image: url('https://cloud-1de12d.b-cdn.net/media/original/871cbee6bfe7d38272e6c3021a1d5a9a.jpg');
       background-size: 741px 2560px; /* Tamaño total de la imagen */
+      background-repeat: no-repeat;
       cursor: pointer;
-      transition: transform 0.2s ease;
-      list-style: none;
+      transition: background-position 0.3s ease, transform 0.2s ease;
+      position: relative;
     }
 
     .tooltip-title {
@@ -58,97 +57,82 @@
 </head>
 <body>
   <ul class="team-grid">
-    <!-- Generamos 11 columnas x 38 filas -->
-    <!-- Cada celda se ajusta dinámicamente según el índice -->
-    <script>
-      const workers = [
-        "Juan Ramirez|Founder CEO",
-        "Carlos Torres|Chief Information Officer",
-        "Monica Gerena|CFO and HR Director",
-        "Jessica Gomez|VP Client Solutions",
-        "Leidy Lagos|Product Owner",
-        "Andrea Botina|Product Owner",
-        "Christian Llanos|Project Manager Lead",
-        "Deborah Lopera|Project Manager",
-        "Daniela Rodriguez|Project Manager",
-        "Nicolas Giraldo|Project Manager",
-        "Claudia Rojas|QA Lead",
-        "David Solorzano|QA",
-        "Aide Paez|QA",
-        "Amanda Triana|Management Human Talent",
-        "Camilo Molina|Developer",
-        "Leonardo Vera|Developer",
-        "Johan Santamaria|Software Architect",
-        "Diana Veloza|QA",
-        "Miller Torres|Development Manager",
-        "Santiago Flores|QA",
-        "Oscar Cubillos|Developer",
-        "Camilo Soto|Developer",
-        "Jose Rodriguez|Developer",
-        "Fredy Rodriguez|Software Architect",
-        "Phil Hennessy|VP – Sales and Marketing",
-        "Cristhian Pérez|Developer",
-        "Alexander Marceles|QA",
-        "Karen Torres|QA",
-        "Duvan Pérez|QA",
-        "Diego Guzman|Developer",
-        "Anyi Garzón|Developer",
-        "Helmer Fuentes|Developer",
-        "Duvan Guia|Developer",
-        "Santiago Gacharná|Developer",
-        "Guillermo Ospitia|Developer",
-        "Viviana Baez|Developer",
-        "David Trujillo|Admin Assistant"
-      ];
-
-      const grid = document.querySelector('.team-grid');
-      let col = 11; // Número de columnas
-      workers.forEach((worker, index) => {
-        const row = Math.floor(index / col); // Calcula la fila
-        const column = index % col; // Calcula la columna
-        const [name, position] = worker.split('|'); // Divide nombre y cargo
-
-        const li = document.createElement('li');
-        li.style.backgroundPosition = `-${column * 67}px -${row * 67}px`;
-
-        const tooltip = document.createElement('div');
-        tooltip.className = 'tooltip-title';
-        tooltip.innerHTML = `${name}<br><span>${position}</span>`;
-
-        li.appendChild(tooltip);
-        grid.appendChild(li);
-      });
-    </script>
+    <!-- Las celdas se generan dinámicamente -->
   </ul>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const grid = document.querySelector('.team-grid');
-      const cells = document.querySelectorAll('.team-grid li');
+      const grid = document.querySelector(".team-grid");
+      const numCols = 11; // Número de columnas
+      const numRows = 38; // Número de filas
+      const directions = {
+        up: 5,
+        down: 1,
+        left: 10,
+        right: 7,
+        "up-right": 4,
+        "up-left": 6,
+        "down-right": 8,
+        "down-left": 9,
+      };
 
-      // Seguimiento del mouse
-      document.addEventListener('mousemove', (e) => {
+      // Genera las celdas dinámicamente
+      for (let row = 0; row < numRows; row++) {
+        for (let col = 0; col < numCols; col++) {
+          const li = document.createElement("li");
+          li.style.backgroundPosition = `-${col * 67}px -${row * 67}px`;
+
+          const tooltip = document.createElement("div");
+          tooltip.className = "tooltip-title";
+          tooltip.innerHTML = `Person ${row + 1} <br><span>Position: ${col + 1}</span>`;
+          li.appendChild(tooltip);
+
+          grid.appendChild(li);
+        }
+      }
+
+      // Reaccionar al movimiento del mouse
+      document.addEventListener("mousemove", (event) => {
         const rect = grid.getBoundingClientRect();
-        const mouseX = e.clientX - rect.left;
-        const mouseY = e.clientY - rect.top;
+        const mouseX = event.clientX - rect.left;
+        const mouseY = event.clientY - rect.top;
 
-        cells.forEach((cell, index) => {
-          const row = Math.floor(index / 11); // Calcula la fila actual
-          const column = index % 11; // Calcula la columna actual
-          const offsetX = mouseX - column * 67 - 33.5; // Centro del celda
-          const offsetY = mouseY - row * 67 - 33.5;
-          const angleX = Math.min(Math.max(offsetX / 10, -15), 15); // Ángulo limitado
-          const angleY = Math.min(Math.max(offsetY / 10, -15), 15);
+        grid.querySelectorAll("li").forEach((cell, index) => {
+          const cellRow = Math.floor(index / numCols);
+          const cellCol = index % numCols;
 
-          cell.style.transform = `rotateX(${angleY}deg) rotateY(${angleX}deg)`;
+          // Calcula la posición relativa del mouse respecto a cada celda
+          const cellX = cellCol * 67 + 33.5;
+          const cellY = cellRow * 67 + 33.5;
+          const deltaX = mouseX - cellX;
+          const deltaY = mouseY - cellY;
+
+          let direction = "";
+
+          if (Math.abs(deltaX) > Math.abs(deltaY)) {
+            direction = deltaX > 0 ? "right" : "left";
+          } else {
+            direction = deltaY > 0 ? "down" : "up";
+          }
+
+          if (deltaX > 0 && deltaY > 0) direction = "down-right";
+          if (deltaX < 0 && deltaY > 0) direction = "down-left";
+          if (deltaX > 0 && deltaY < 0) direction = "up-right";
+          if (deltaX < 0 && deltaY < 0) direction = "up-left";
+
+          const directionIndex = directions[direction] || 0;
+
+          cell.style.backgroundPosition = `-${(directionIndex + cellCol) * 67}px -${
+            cellRow * 67
+          }px`;
         });
       });
 
-      // Reset de transformación cuando el mouse sale
-      grid.addEventListener('mouseleave', () => {
-        cells.forEach((cell) => {
-          cell.style.transform = 'rotateX(0deg) rotateY(0deg)';
-        });
+      // Cambia el estado "Sonriendo" al hacer click
+      grid.addEventListener("click", (event) => {
+        if (event.target.tagName === "LI") {
+          event.target.style.backgroundPosition = `-0px -0px`; // Cambia al estado inicial
+        }
       });
     });
   </script>
